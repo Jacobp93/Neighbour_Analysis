@@ -16,8 +16,7 @@ database = os.getenv("DATABASE")
 username = os.getenv("USERNAME")
 password = os.getenv("PASSWORD")
 opencage_api_key = os.getenv("OPENCAGE_API_KEY")
-connection_string = f'mssql+pyodbc://{username}:{password}@{server}/{database}?driver=SQL+Server'
-
+connection_string = f"mssql+pymssql://{username}:{password}@{server}/{database}"
 
 geolocator = OpenCage(api_key="OPENCAGE_API_KEY")
 
