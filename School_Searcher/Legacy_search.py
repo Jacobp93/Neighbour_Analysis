@@ -4,19 +4,21 @@ from sklearn.neighbors import NearestNeighbors
 import numpy as np
 from geopy.geocoders import OpenCage  # Use OpenCage instead of Nominatim
 from sqlalchemy import create_engine
+import os
 # Load your amended CSV file (adjust the file path accordingly)
 #df = pd.read_csv(r"C:\Users\Jacob\OneDrive - Jigsaw PSHE Ltd\Documents\Python\Neighbour_Analysis\HS_PSHE_RE_DATA_with_lat_lon_MASTER.csv")
 
 
 
-server = ''
-database = ''
-username = ''
-password = ''
+server = os.getenv("SERVER")
+database = os.getenv("DATABASE")
+username = os.getenv("USERNAME")
+password = os.getenv("PASSWORD")
+opencage_api_key = os.getenv("OPENCAGE_API_KEY")
 connection_string = f'mssql+pyodbc://{username}:{password}@{server}/{database}?driver=SQL+Server'
 
 
-geolocator = OpenCage(api_key="503a942785e147c18d4af83d9e2b0a48")
+geolocator = OpenCage(api_key="OPENCAGE_API_KEY")
 
 
 # Caching function for geocoding to avoid redundant API calls
