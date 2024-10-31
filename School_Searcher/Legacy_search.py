@@ -5,7 +5,7 @@ import numpy as np
 from geopy.geocoders import OpenCage  # Use OpenCage instead of Nominatim
 from sqlalchemy import create_engine
 import os
-import pyodbc
+import pyodbc as db
 # Load your amended CSV file (adjust the file path accordingly)
 #df = pd.read_csv(r"C:\Users\Jacob\OneDrive - Jigsaw PSHE Ltd\Documents\Python\Neighbour_Analysis\HS_PSHE_RE_DATA_with_lat_lon_MASTER.csv")
 
@@ -18,8 +18,19 @@ SQL_PASS = st.secrets["sql"]["password"]
 OPENCAGE_API_KEY = st.secrets["api_keys"]["opencage"]  # Example assuming OpenCage API key is also in secrets
 driver = '{ODBC Driver 17 for SQL Server}'
 
-# Define the connection string using pyodbc driver
-connection_string = f"mssql+pyodbc://{SQL_UID}:{SQL_PASS}@{SQL_SERVER}/{SQL_DATABASE}?driver={driver}"
+try:
+    conn = db.connect(
+        f'DRIVER={driver};'
+        f'SERVER={SQL_SERVER};'
+        f'DATABASE={SQL_DATABASE};'
+        f'UID={SQL_UID};'
+        f'PWD={SQL_PASS};'  # Include password for authentication
+        'Trusted_Connection=no;'
+    )
+    st.write("Connection established successfully")
+except db.Error as e:
+    st.error(f"Error connecting to database: {e}")
+    st.stop()
 
 
 geolocator = OpenCage(api_key="OPENCAGE_API_KEY")
