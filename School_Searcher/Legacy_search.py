@@ -5,8 +5,7 @@ import numpy as np
 from geopy.geocoders import OpenCage  # Use OpenCage instead of Nominatim
 from sqlalchemy import create_engine
 import os
-import pymssql
-
+import pyodbc
 # Load your amended CSV file (adjust the file path accordingly)
 #df = pd.read_csv(r"C:\Users\Jacob\OneDrive - Jigsaw PSHE Ltd\Documents\Python\Neighbour_Analysis\HS_PSHE_RE_DATA_with_lat_lon_MASTER.csv")
 
@@ -17,7 +16,10 @@ database = os.getenv("DATABASE")
 username = os.getenv("USERNAME")
 password = os.getenv("PASSWORD")
 opencage_api_key = os.getenv("OPENCAGE_API_KEY")
-connection_string = f"mssql+pymssql://{username}:{password}@{server}/{database}"
+
+driver = '{ODBC Driver 17 for SQL Server}'  # Ensure this driver is installed on your deployment environment
+connection_string = f"mssql+pyodbc://{username}:{password}@{server}/{database}?driver={driver}"
+
 
 geolocator = OpenCage(api_key="OPENCAGE_API_KEY")
 
