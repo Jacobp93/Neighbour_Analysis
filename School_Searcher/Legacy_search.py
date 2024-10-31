@@ -2,29 +2,25 @@ import streamlit as st
 import pandas as pd
 from sklearn.neighbors import NearestNeighbors
 import numpy as np
-from geopy.geocoders import OpenCage  # Use OpenCage instead of Nominatim
-from sqlalchemy import create_engine
-import os
+from geopy.geocoders import OpenCage
 import pyodbc as db
-# Load your amended CSV file (adjust the file path accordingly)
-#df = pd.read_csv(r"C:\Users\Jacob\OneDrive - Jigsaw PSHE Ltd\Documents\Python\Neighbour_Analysis\HS_PSHE_RE_DATA_with_lat_lon_MASTER.csv")
 
-
-
+# Fetch the connection parameters from Streamlit secrets
 SQL_SERVER = st.secrets["sql"]["server"]
 SQL_DATABASE = st.secrets["sql"]["database"]
 SQL_UID = st.secrets["sql"]["user"]
 SQL_PASS = st.secrets["sql"]["password"]
-OPENCAGE_API_KEY = st.secrets["api_keys"]["opencage"]  # Example assuming OpenCage API key is also in secrets
+OPENCAGE_API_KEY = st.secrets["api_keys"]["opencage"]
 driver = '{ODBC Driver 17 for SQL Server}'
 
+# Attempt to establish a direct connection using pyodbc
 try:
     conn = db.connect(
         f'DRIVER={driver};'
         f'SERVER={SQL_SERVER};'
         f'DATABASE={SQL_DATABASE};'
         f'UID={SQL_UID};'
-        f'PWD={SQL_PASS};'  # Include password for authentication
+        f'PWD={SQL_PASS};'
         'Trusted_Connection=no;'
     )
     st.write("Connection established successfully")
@@ -32,9 +28,8 @@ except db.Error as e:
     st.error(f"Error connecting to database: {e}")
     st.stop()
 
-
-geolocator = OpenCage(api_key="OPENCAGE_API_KEY")
-
+# Initialize geolocator with OpenCage API key
+geolocator = OpenCage(api_key=OPENCAGE_API_KEY)
 
 # Caching function for geocoding to avoid redundant API calls
 @st.cache_data
@@ -44,9 +39,6 @@ def get_geocode(postcode):
 # Load and clean data from SQL and separate into datasets
 @st.cache_data
 def load_data():
-    engine = create_engine(driver)  # Update with your connection string
-    
-    # SQL query to load data into DataFrame
     query = """
     SELECT 
         id AS [Record ID],
@@ -59,9 +51,8 @@ def load_data():
     FROM 
         _hubspot.company;
     """
-    
     # Load data into DataFrame
-    df = pd.read_sql_query(query, engine)
+    df = pd.read_sql_query(query, conn)
 
     # Drop rows with missing coordinates
     df = df.dropna(subset=['latitude', 'longitude'])
@@ -142,11 +133,11 @@ if st.button("Search"):
 
             if search_primary_legacy:
                 st.subheader("Searching in Primary Legacy dataset...")
-                selected_datasets.append(primary_saas)  # Use `primary_saas` for finding nearest SaaS
+                selected_datasets.append(primary_saas)
 
             if search_jigsaw_re:
                 st.subheader("Searching in Jigsaw RE dataset...")
-                selected_datasets.append(re_saas)  # Use `re_saas` for Jigsaw RE data
+                selected_datasets.append(re_saas)
 
             # Concatenate selected datasets if any are selected
             combined_data = pd.concat(selected_datasets, ignore_index=True) if selected_datasets else pd.DataFrame()
