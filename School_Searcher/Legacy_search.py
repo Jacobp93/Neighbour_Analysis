@@ -44,7 +44,7 @@ def get_geocode(postcode):
 # Load and clean data from SQL and separate into datasets
 @st.cache_data
 def load_data():
-    engine = create_engine(connection_string)  # Update with your connection string
+    engine = create_engine(driver)  # Update with your connection string
     
     # SQL query to load data into DataFrame
     query = """
