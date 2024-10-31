@@ -11,14 +11,15 @@ import pyodbc
 
 
 
-server = os.getenv("SERVER")
-database = os.getenv("DATABASE")
-username = os.getenv("USERNAME")
-password = os.getenv("PASSWORD")
-opencage_api_key = os.getenv("OPENCAGE_API_KEY")
+SQL_SERVER = st.secrets["sql"]["server"]
+SQL_DATABASE = st.secrets["sql"]["database"]
+SQL_UID = st.secrets["sql"]["user"]
+SQL_PASS = st.secrets["sql"]["password"]
+OPENCAGE_API_KEY = st.secrets["api_keys"]["opencage"]  # Example assuming OpenCage API key is also in secrets
+driver = '{ODBC Driver 17 for SQL Server}'
 
-driver = '{ODBC Driver 17 for SQL Server}'  # Ensure this driver is installed on your deployment environment
-connection_string = f"mssql+pyodbc://{username}:{password}@{server}/{database}?driver={driver}"
+# Define the connection string using pyodbc driver
+connection_string = f"mssql+pyodbc://{SQL_UID}:{SQL_PASS}@{SQL_SERVER}/{SQL_DATABASE}?driver={driver}"
 
 
 geolocator = OpenCage(api_key="OPENCAGE_API_KEY")
